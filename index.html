@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigiLib — Perpustakaan Sekolah Digital</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0f0f13;
+    --surface: #16161d;
+    --surface2: #1e1e28;
+    --border: #2a2a38;
+    --accent: #c9a84c;
+    --accent2: #e8c97a;
+    --text: #e8e8f0;
+    --muted: #7a7a96;
+    --danger: #e05555;
+    --success: #4caf78;
+    --info: #5599e0;
+    --radius: 12px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== LOGIN ===== */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 30% 50%, #1a1428 0%, #0f0f13 60%);
+    position: relative;
+    overflow: hidden;
+  }
+  #loginScreen::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    border-radius: 50%;
+  }
+  #loginScreen::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(85,153,224,0.06) 0%, transparent 70%);
+    bottom: -50px; right: -50px;
+    border-radius: 50%;
+  }
+
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px;
+    width: 420px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+    animation: fadeUp 0.6s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(30px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  .logo-area { text-align: center; margin-bottom: 36px; }
+  .logo-icon {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--accent), #8a5c00);
+    border-radius: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 28px; margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+  }
+  .logo-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 900;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .logo-sub { color: var(--muted); font-size: 13px; margin-top: 4px; letter-spacing: 0.5px; }
+
+  .role-tabs { display: flex; gap: 8px; margin-bottom: 28px; }
+  .role-tab {
+    flex: 1; padding: 10px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted);
+    border-radius: var(--radius); cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    transition: all 0.2s;
+  }
+  .role-tab.active {
+    background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+    border-color: var(--accent); color: var(--accent);
+    font-weight: 600;
+  }
+
+  .form-group { margin-bottom: 18px; }
+  .form-label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
+  .form-input {
+    width: 100%; padding: 12px 16px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+  }
+
+  .btn-primary {
+    width: 100%; padding: 13px;
+    background: linear-gradient(135deg, var(--accent), #a07820);
+    border: none; border-radius: var(--radius);
+    color: #0f0f13; font-weight: 700; font-size: 15px;
+    cursor: pointer; transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(201,168,76,0.3); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .login-footer { text-align: center; margin-top: 20px; color: var(--muted); font-size: 13px; }
+  .link-btn { color: var(--accent); cursor: pointer; background: none; border: none; font-size: 13px; text-decoration: underline; font-family: 'DM Sans', sans-serif; }
+
+  .alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+  .alert-danger { background: rgba(224,85,85,0.1); border: 1px solid rgba(224,85,85,0.3); color: #e87878; }
+  .alert-success { background: rgba(76,175,120,0.1); border: 1px solid rgba(76,175,120,0.3); color: #6fd4a0; }
+
+  /* ===== REGISTER SCREEN ===== */
+  #registerScreen { display: none; }
+
+  /* ===== MAIN APP ===== */
+  #appScreen { display: none; }
+
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    z-index: 100;
+  }
+  .sidebar-brand {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-brand-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; font-weight: 900;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .sidebar-brand-sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+  .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+  .nav-section-label {
+    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); padding: 8px 8px 4px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    color: var(--muted); font-size: 14px; font-weight: 500;
+    transition: all 0.15s; margin-bottom: 2px;
+    border: none; background: none; width: 100%; text-align: left;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: rgba(201,168,76,0.12); color: var(--accent); }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 16px; border-top: 1px solid var(--border);
+  }
+  .user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .user-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #8a5c00);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #0f0f13;
+  }
+  .user-name { font-size: 13px; font-weight: 600; }
+  .user-role { font-size: 11px; color: var(--muted); }
+  .btn-logout {
+    width: 100%; padding: 9px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+  .main-content {
+    margin-left: 240px;
+    min-height: 100vh;
+    padding: 32px;
+  }
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  .page-header { margin-bottom: 28px; }
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 700;
+  }
+  .page-sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  /* ===== STAT CARDS ===== */
+  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--accent); }
+  .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-value { font-size: 32px; font-weight: 700; margin: 6px 0 4px; font-family: 'Playfair Display', serif; }
+  .stat-icon { font-size: 24px; float: right; opacity: 0.4; }
+
+  /* ===== TABLE ===== */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 24px;
+  }
+  .card-header {
+    padding: 18px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-title { font-size: 16px; font-weight: 600; }
+  .card-body { padding: 20px; }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    text-align: left; padding: 10px 14px;
+    color: var(--muted); font-weight: 600; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 13px 14px; border-bottom: 1px solid rgba(42,42,56,0.5);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  }
+  .badge-success { background: rgba(76,175,120,0.12); color: var(--success); }
+  .badge-danger  { background: rgba(224,85,85,0.12);  color: var(--danger); }
+  .badge-info    { background: rgba(85,153,224,0.12); color: var(--info); }
+  .badge-warning { background: rgba(201,168,76,0.12); color: var(--accent); }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    padding: 8px 16px; border-radius: 8px; border: none;
+    cursor: pointer; font-size: 13px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-gold { background: linear-gradient(135deg, var(--accent), #a07820); color: #0f0f13; }
+  .btn-gold:hover { box-shadow: 0 4px 14px rgba(201,168,76,0.3); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { background: rgba(224,85,85,0.15); border: 1px solid rgba(224,85,85,0.3); color: var(--danger); }
+  .btn-danger:hover { background: rgba(224,85,85,0.25); }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* ===== TOOLBAR ===== */
+  .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .search-input {
+    padding: 9px 14px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text); border-radius: 8px;
+    font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none;
+    width: 240px; transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: none; align-items: center; justify-content: center; z-index: 999;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px; width: 480px; max-width: 95vw;
+    max-height: 85vh; overflow-y: auto;
+    animation: modalIn 0.25s ease;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; font-weight: 700; margin-bottom: 24px;
+  }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-select {
+    width: 100%; padding: 11px 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-select:focus { border-color: var(--accent); }
+  .form-textarea {
+    width: 100%; padding: 11px 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
+    resize: vertical; min-height: 80px; transition: border-color 0.2s;
+  }
+  .form-textarea:focus { border-color: var(--accent); }
+
+  /* ===== NOTIFICATION ===== */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    padding: 14px 20px; border-radius: 10px;
+    font-size: 14px; font-weight: 500; z-index: 9999;
+    transform: translateY(100px); opacity: 0;
+    transition: all 0.3s; pointer-events: none;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+  #toast.success { background: var(--success); color: white; }
+  #toast.error   { background: var(--danger);  color: white; }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .sidebar { width: 200px; }
+    .main-content { margin-left: 200px; padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ======= LOGIN ======= -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="logo-area">
+      <div class="logo-icon">📚</div>
+      <div class="logo-title">DigiLib</div>
+      <div class="logo-sub">Perpustakaan Sekolah Digital</div>
+    </div>
+
+    <div id="loginAlert" style="display:none"></div>
+
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="setRole('admin')">🔐 Admin</button>
+      <button class="role-tab" onclick="setRole('siswa')">🎒 Siswa</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" id="loginUsername" class="form-input" placeholder="Masukkan username">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" id="loginPassword" class="form-input" placeholder="Masukkan password">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Masuk</button>
+
+    <div class="login-footer" id="registerLink">
+      Belum punya akun? <button class="link-btn" onclick="showRegister()">Daftar sekarang</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= REGISTER ======= -->
+<div id="registerScreen" style="min-height:100vh;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at 70% 50%,#1a1428,#0f0f13);">
+  <div class="login-card" style="width:460px">
+    <div class="logo-area">
+      <div class="logo-icon">📝</div>
+      <div class="logo-title">Daftar Anggota</div>
+      <div class="logo-sub">Buat akun siswa baru</div>
+    </div>
+    <div id="regAlert" style="display:none"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nama Lengkap</label>
+        <input type="text" id="regNama" class="form-input" placeholder="Nama lengkap">
+      </div>
+      <div class="form-group">
+        <label class="form-label">NIS</label>
+        <input type="text" id="regNis" class="form-input" placeholder="Nomor induk siswa">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Kelas</label>
+      <input type="text" id="regKelas" class="form-input" placeholder="Contoh: XII RPL 1">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" id="regUsername" class="form-input" placeholder="Buat username">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" id="regPassword" class="form-input" placeholder="Buat password">
+    </div>
+    <button class="btn-primary" onclick="doRegister()">Daftar</button>
+    <div class="login-footer" style="margin-top:16px">
+      Sudah punya akun? <button class="link-btn" onclick="showLogin()">Login di sini</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= MAIN APP ======= -->
+<div id="appScreen">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-title">📚 DigiLib</div>
+      <div class="sidebar-brand-sub">Perpustakaan Digital</div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="avatarInitial">A</div>
+        <div>
+          <div class="user-name" id="sidebarName">-</div>
+          <div class="user-role" id="sidebarRole">-</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">🚪 Keluar</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main-content">
+
+    <!-- DASHBOARD ADMIN -->
+    <div class="page" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub" id="dashGreet">Selamat datang kembali!</div>
+      </div>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">📋 Transaksi Terbaru</span></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Siswa</th><th>Buku</th><th>Tgl Pinjam</th><th>Tgl Kembali</th><th>Status</th></tr></thead>
+          <tbody id="dashTransaksi"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA BUKU -->
+    <div class="page" id="page-buku">
+      <div class="page-header">
+        <div class="page-title">Data Buku</div>
+        <div class="page-sub">Kelola koleksi buku perpustakaan</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="toolbar">
+            <input type="text" class="search-input" placeholder="🔍 Cari buku..." oninput="renderBuku(this.value)">
+          </div>
+          <button class="btn btn-gold" onclick="openModalBuku()">+ Tambah Buku</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Judul</th><th>Pengarang</th><th>Kategori</th><th>Stok</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="tableBuku"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANGGOTA -->
+    <div class="page" id="page-anggota">
+      <div class="page-header">
+        <div class="page-title">Kelola Anggota</div>
+        <div class="page-sub">Data seluruh siswa anggota perpustakaan</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="toolbar">
+            <input type="text" class="search-input" placeholder="🔍 Cari anggota..." oninput="renderAnggota(this.value)">
+          </div>
+          <button class="btn btn-gold" onclick="openModalAnggota()">+ Tambah Anggota</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>NIS</th><th>Nama</th><th>Kelas</th><th>Username</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="tableAnggota"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSAKSI -->
+    <div class="page" id="page-transaksi">
+      <div class="page-header">
+        <div class="page-title">Transaksi Peminjaman</div>
+        <div class="page-sub">Catat dan kelola peminjaman buku</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="toolbar">
+            <input type="text" class="search-input" placeholder="🔍 Cari transaksi..." oninput="renderTransaksi(this.value)">
+            <select class="form-select" style="width:160px" onchange="renderTransaksi(document.querySelector('#page-transaksi .search-input').value, this.value)">
+              <option value="">Semua Status</option>
+              <option value="dipinjam">Dipinjam</option>
+              <option value="dikembalikan">Dikembalikan</option>
+              <option value="terlambat">Terlambat</option>
+            </select>
+          </div>
+          <button class="btn btn-gold" onclick="openModalTransaksi()">+ Pinjam Buku</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Anggota</th><th>Buku</th><th>Tgl Pinjam</th><th>Tgl Kembali</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="tableTransaksi"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SISWA: DASHBOARD -->
+    <div class="page" id="page-siswa-dashboard">
+      <div class="page-header">
+        <div class="page-title">Dashboard Siswa</div>
+        <div class="page-sub" id="siswaDashGreet">Selamat datang!</div>
+      </div>
+      <div class="stats-grid" id="siswaStats"></div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">📖 Riwayat Pinjaman Saya</span></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Buku</th><th>Tgl Pinjam</th><th>Tgl Kembali</th><th>Status</th></tr></thead>
+          <tbody id="siswaRiwayat"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SISWA: CARI BUKU -->
+    <div class="page" id="page-siswa-buku">
+      <div class="page-header">
+        <div class="page-title">Katalog Buku</div>
+        <div class="page-sub">Cari dan pinjam buku yang tersedia</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <input type="text" class="search-input" placeholder="🔍 Cari buku..." oninput="renderKatalog(this.value)">
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Judul</th><th>Pengarang</th><th>Kategori</th><th>Stok</th><th>Aksi</th></tr></thead>
+          <tbody id="tableKatalog"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SISWA: PINJAMAN SAYA -->
+    <div class="page" id="page-siswa-pinjaman">
+      <div class="page-header">
+        <div class="page-title">Pinjaman Aktif</div>
+        <div class="page-sub">Buku yang sedang Anda pinjam</div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>Buku</th><th>Tgl Pinjam</th><th>Tgl Kembali</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="tablePinjamanSaya"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== MODALS ====== -->
+
+<!-- Modal Buku -->
+<div class="modal-overlay" id="modalBuku">
+  <div class="modal">
+    <div class="modal-title" id="modalBukuTitle">Tambah Buku</div>
+    <input type="hidden" id="bukuId">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Judul Buku *</label>
+        <input type="text" id="bukuJudul" class="form-input" placeholder="Judul buku">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pengarang *</label>
+        <input type="text" id="bukuPengarang" class="form-input" placeholder="Nama pengarang">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Penerbit</label>
+        <input type="text" id="bukuPenerbit" class="form-input" placeholder="Nama penerbit">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tahun Terbit</label>
+        <input type="number" id="bukuTahun" class="form-input" placeholder="Contoh: 2023">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Kategori</label>
+        <select id="bukuKategori" class="form-select">
+          <option>Fiksi</option><option>Non-Fiksi</option><option>Ilmu Pengetahuan</option>
+          <option>Teknologi</option><option>Sejarah</option><option>Seni & Budaya</option>
+          <option>Pelajaran</option><option>Referensi</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Stok *</label>
+        <input type="number" id="bukuStok" class="form-input" placeholder="Jumlah stok" min="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Deskripsi</label>
+      <textarea id="bukuDeskripsi" class="form-textarea" placeholder="Deskripsi singkat buku..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalBuku')">Batal</button>
+      <button class="btn btn-gold" onclick="saveBuku()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Anggota -->
+<div class="modal-overlay" id="modalAnggota">
+  <div class="modal">
+    <div class="modal-title" id="modalAnggotaTitle">Tambah Anggota</div>
+    <input type="hidden" id="anggotaId">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">NIS *</label>
+        <input type="text" id="anggotaNis" class="form-input" placeholder="Nomor induk siswa">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nama Lengkap *</label>
+        <input type="text" id="anggotaNama" class="form-input" placeholder="Nama lengkap">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Kelas *</label>
+        <input type="text" id="anggotaKelas" class="form-input" placeholder="Contoh: XII RPL 1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select id="anggotaStatus" class="form-select">
+          <option value="aktif">Aktif</option>
+          <option value="nonaktif">Non-Aktif</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" id="anggotaUsername" class="form-input" placeholder="Username login">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="anggotaPassword" class="form-input" placeholder="Password (isi jika ubah)">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalAnggota')">Batal</button>
+      <button class="btn btn-gold" onclick="saveAnggota()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Transaksi -->
+<div class="modal-overlay" id="modalTransaksi">
+  <div class="modal">
+    <div class="modal-title">Tambah Peminjaman</div>
+    <div class="form-group">
+      <label class="form-label">Anggota *</label>
+      <select id="trxAnggota" class="form-select"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Buku *</label>
+      <select id="trxBuku" class="form-select"></select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Tanggal Pinjam *</label>
+        <input type="date" id="trxTglPinjam" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tanggal Kembali *</label>
+        <input type="date" id="trxTglKembali" class="form-input">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalTransaksi')">Batal</button>
+      <button class="btn btn-gold" onclick="saveTransaksi()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Konfirmasi Kembali (Siswa) -->
+<div class="modal-overlay" id="modalKembali">
+  <div class="modal" style="width:380px">
+    <div class="modal-title">Kembalikan Buku</div>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:20px">Apakah Anda yakin ingin mengembalikan buku ini?</p>
+    <div id="kembaliInfo" style="background:var(--surface2);border-radius:8px;padding:14px;margin-bottom:20px;font-size:14px"></div>
+    <input type="hidden" id="kembaliTrxId">
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalKembali')">Batal</button>
+      <button class="btn btn-gold" onclick="doKembali()">Ya, Kembalikan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal-overlay" id="modalHapus">
+  <div class="modal" style="width:360px">
+    <div class="modal-title">⚠️ Konfirmasi Hapus</div>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:24px" id="hapusMsg">Apakah Anda yakin ingin menghapus data ini?</p>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalHapus')">Batal</button>
+      <button class="btn btn-danger" onclick="confirmHapus()">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pinjam Siswa -->
+<div class="modal-overlay" id="modalPinjamSiswa">
+  <div class="modal" style="width:380px">
+    <div class="modal-title">📖 Pinjam Buku</div>
+    <div id="pinjamBukuInfo" style="background:var(--surface2);border-radius:8px;padding:14px;margin-bottom:20px;font-size:14px"></div>
+    <input type="hidden" id="pinjamBukuId">
+    <div class="form-group">
+      <label class="form-label">Tanggal Kembali</label>
+      <input type="date" id="pinjamTglKembali" class="form-input">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalPinjamSiswa')">Batal</button>
+      <button class="btn btn-gold" onclick="doPinjamSiswa()">Pinjam</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ====================== DATA STORE ======================
+let db = {
+  buku: [
+    {id:1, judul:'Laskar Pelangi', pengarang:'Andrea Hirata', penerbit:'Bentang', tahun:2005, kategori:'Fiksi', stok:5, deskripsi:'Novel tentang semangat anak-anak Belitung'},
+    {id:2, judul:'Bumi Manusia', pengarang:'Pramoedya Ananta Toer', penerbit:'Lentera Dipantara', tahun:1980, kategori:'Fiksi', stok:3, deskripsi:'Kisah Minke di era kolonial Belanda'},
+    {id:3, judul:'Algoritma & Pemrograman', pengarang:'Rinaldi Munir', penerbit:'Informatika', tahun:2020, kategori:'Teknologi', stok:8, deskripsi:'Dasar-dasar algoritma dan pemrograman'},
+    {id:4, judul:'Sejarah Indonesia Modern', pengarang:'M.C. Ricklefs', penerbit:'Gadjah Mada UP', tahun:2018, kategori:'Sejarah', stok:4, deskripsi:'Sejarah Indonesia dari 1200 hingga kini'},
+    {id:5, judul:'Kimia Dasar', pengarang:'Raymond Chang', penerbit:'Erlangga', tahun:2021, kategori:'Ilmu Pengetahuan', stok:6, deskripsi:'Kimia untuk mahasiswa dan pelajar'},
+  ],
+  anggota: [
+    {id:1, nis:'12001', nama:'Budi Santoso', kelas:'XII RPL 1', username:'budi', password:'budi123', status:'aktif'},
+    {id:2, nis:'12002', nama:'Siti Rahayu', kelas:'XII RPL 2', username:'siti', password:'siti123', status:'aktif'},
+    {id:3, nis:'12003', nama:'Ahmad Fauzi', kelas:'XI RPL 1', username:'ahmad', password:'ahmad123', status:'aktif'},
+  ],
+  transaksi: [
+    {id:1, anggotaId:1, bukuId:1, tglPinjam:'2026-04-10', tglKembali:'2026-04-17', status:'terlambat'},
+    {id:2, anggotaId:2, bukuId:3, tglPinjam:'2026-04-15', tglKembali:'2026-04-22', status:'dipinjam'},
+  ],
+  admin: [{username:'admin', password:'admin123', nama:'Administrator'}],
+  nextBukuId: 6, nextAnggotaId: 4, nextTrxId: 3
+};
+
+let currentUser = null;
+let currentRole = 'admin';
+let hapusCallback = null;
+
+// Load from localStorage
+function loadDB() {
+  const saved = localStorage.getItem('digilib_db');
+  if (saved) db = JSON.parse(saved);
+}
+function saveDB() {
+  localStorage.setItem('digilib_db', JSON.stringify(db));
+}
+
+loadDB();
+
+// ====================== AUTH ======================
+function setRole(role) {
+  currentRole = role;
+  document.querySelectorAll('.role-tab').forEach((t,i) => t.classList.toggle('active', (i===0 && role==='admin') || (i===1 && role==='siswa')));
+  document.getElementById('registerLink').style.display = role === 'siswa' ? 'block' : 'none';
+}
+setRole('admin');
+
+function doLogin() {
+  const u = document.getElementById('loginUsername').value.trim();
+  const p = document.getElementById('loginPassword').value.trim();
+  const alert = document.getElementById('loginAlert');
+
+  if (!u || !p) { showLoginAlert('Isi username dan password!', 'danger'); return; }
+
+  if (currentRole === 'admin') {
+    const admin = db.admin.find(a => a.username === u && a.password === p);
+    if (admin) { currentUser = {...admin, role:'admin'}; enterApp(); }
+    else showLoginAlert('Username atau password salah!', 'danger');
+  } else {
+    const siswa = db.anggota.find(a => a.username === u && a.password === p && a.status === 'aktif');
+    if (siswa) { currentUser = {...siswa, role:'siswa'}; enterApp(); }
+    else showLoginAlert('Username/password salah atau akun tidak aktif!', 'danger');
+  }
+}
+
+function showLoginAlert(msg, type) {
+  const el = document.getElementById('loginAlert');
+  el.style.display = 'block';
+  el.className = `alert alert-${type}`;
+  el.textContent = msg;
+}
+
+function showRegister() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('registerScreen').style.display = 'flex';
+}
+function showLogin() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('registerScreen').style.display = 'none';
+}
+
+function doRegister() {
+  const nama = document.getElementById('regNama').value.trim();
+  const nis  = document.getElementById('regNis').value.trim();
+  const kelas = document.getElementById('regKelas').value.trim();
+  const username = document.getElementById('regUsername').value.trim();
+  const password = document.getElementById('regPassword').value.trim();
+
+  if (!nama || !nis || !kelas || !username || !password) {
+    showRegAlert('Semua field wajib diisi!', 'danger'); return;
+  }
+  if (db.anggota.find(a => a.username === username)) {
+    showRegAlert('Username sudah digunakan!', 'danger'); return;
+  }
+  if (db.anggota.find(a => a.nis === nis)) {
+    showRegAlert('NIS sudah terdaftar!', 'danger'); return;
+  }
+
+  db.anggota.push({id: db.nextAnggotaId++, nis, nama, kelas, username, password, status:'aktif'});
+  saveDB();
+  showRegAlert('Pendaftaran berhasil! Silakan login.', 'success');
+  setTimeout(() => { showLogin(); clearRegForm(); }, 1500);
+}
+function showRegAlert(msg, type) {
+  const el = document.getElementById('regAlert');
+  el.style.display = 'block';
+  el.className = `alert alert-${type}`;
+  el.textContent = msg;
+}
+function clearRegForm() {
+  ['regNama','regNis','regKelas','regUsername','regPassword'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('regAlert').style.display = 'none';
+}
+
+function enterApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('registerScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'block';
+
+  document.getElementById('sidebarName').textContent = currentUser.nama;
+  document.getElementById('sidebarRole').textContent = currentUser.role === 'admin' ? 'Administrator' : currentUser.kelas || 'Siswa';
+  document.getElementById('avatarInitial').textContent = currentUser.nama[0].toUpperCase();
+
+  buildSidebar();
+
+  if (currentUser.role === 'admin') {
+    document.getElementById('dashGreet').textContent = `Halo, ${currentUser.nama}! Kelola perpustakaan dengan mudah.`;
+    showPage('dashboard');
+    renderDashboard();
+  } else {
+    document.getElementById('siswaDashGreet').textContent = `Halo, ${currentUser.nama}! Selamat membaca 📚`;
+    showPage('siswa-dashboard');
+    renderSiswaDashboard();
+  }
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUsername').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginAlert').style.display = 'none';
+}
+
+// ====================== SIDEBAR ======================
+function buildSidebar() {
+  const nav = document.getElementById('sidebarNav');
+  const menus = currentUser.role === 'admin' ? [
+    {label:'UTAMA', items:[
+      {icon:'📊', text:'Dashboard', page:'dashboard'},
+    ]},
+    {label:'KELOLA DATA', items:[
+      {icon:'📚', text:'Data Buku', page:'buku'},
+      {icon:'👥', text:'Kelola Anggota', page:'anggota'},
+      {icon:'🔄', text:'Transaksi', page:'transaksi'},
+    ]}
+  ] : [
+    {label:'MENU', items:[
+      {icon:'🏠', text:'Dashboard', page:'siswa-dashboard'},
+      {icon:'📖', text:'Katalog Buku', page:'siswa-buku'},
+      {icon:'📋', text:'Pinjaman Saya', page:'siswa-pinjaman'},
+    ]}
+  ];
+
+  nav.innerHTML = menus.map(section => `
+    <div class="nav-section-label">${section.label}</div>
+    ${section.items.map(item => `
+      <button class="nav-item" data-page="${item.page}" onclick="navClick('${item.page}')">
+        <span class="icon">${item.icon}</span>${item.text}
+      </button>
+    `).join('')}
+  `).join('');
+}
+
+function navClick(page) {
+  showPage(page);
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'buku') renderBuku();
+  if (page === 'anggota') renderAnggota();
+  if (page === 'transaksi') renderTransaksi();
+  if (page === 'siswa-dashboard') renderSiswaDashboard();
+  if (page === 'siswa-buku') renderKatalog();
+  if (page === 'siswa-pinjaman') renderPinjamanSaya();
+}
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+}
+
+// ====================== DASHBOARD ADMIN ======================
+function renderDashboard() {
+  const totalBuku   = db.buku.length;
+  const totalAnggota = db.anggota.filter(a => a.status === 'aktif').length;
+  const totalDipinjam = db.transaksi.filter(t => t.status !== 'dikembalikan').length;
+  const totalTerlambat = db.transaksi.filter(t => t.status === 'terlambat').length;
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><span class="stat-icon">📚</span><div class="stat-label">Total Buku</div><div class="stat-value" style="color:var(--accent)">${totalBuku}</div></div>
+    <div class="stat-card"><span class="stat-icon">👥</span><div class="stat-label">Anggota Aktif</div><div class="stat-value" style="color:var(--info)">${totalAnggota}</div></div>
+    <div class="stat-card"><span class="stat-icon">📖</span><div class="stat-label">Sedang Dipinjam</div><div class="stat-value" style="color:var(--success)">${totalDipinjam}</div></div>
+    <div class="stat-card"><span class="stat-icon">⚠️</span><div class="stat-label">Terlambat</div><div class="stat-value" style="color:var(--danger)">${totalTerlambat}</div></div>
+  `;
+
+  const recent = [...db.transaksi].reverse().slice(0,5);
+  document.getElementById('dashTransaksi').innerHTML = recent.length ? recent.map(t => {
+    const a = db.anggota.find(x => x.id === t.anggotaId);
+    const b = db.buku.find(x => x.id === t.bukuId);
+    return `<tr><td>${a?.nama||'-'}</td><td>${b?.judul||'-'}</td><td>${t.tglPinjam}</td><td>${t.tglKembali}</td><td>${badgeStatus(t.status)}</td></tr>`;
+  }).join('') : `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📋</div>Belum ada transaksi</div></td></tr>`;
+}
+
+// ====================== BUKU ======================
+function renderBuku(q='') {
+  const list = db.buku.filter(b => !q || b.judul.toLowerCase().includes(q.toLowerCase()) || b.pengarang.toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('tableBuku').innerHTML = list.length ? list.map(b => `
+    <tr>
+      <td>#${b.id}</td>
+      <td><strong>${b.judul}</strong></td>
+      <td>${b.pengarang}</td>
+      <td><span class="badge badge-info">${b.kategori}</span></td>
+      <td>${b.stok}</td>
+      <td>${b.stok > 0 ? '<span class="badge badge-success">Tersedia</span>' : '<span class="badge badge-danger">Habis</span>'}</td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editBuku(${b.id})">✏️ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteBuku(${b.id})">🗑️</button>
+      </td>
+    </tr>
+  `).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📚</div>Tidak ada buku ditemukan</div></td></tr>`;
+}
+
+function openModalBuku(id=null) {
+  document.getElementById('modalBukuTitle').textContent = id ? 'Edit Buku' : 'Tambah Buku';
+  document.getElementById('bukuId').value = id || '';
+  if (id) {
+    const b = db.buku.find(x => x.id === id);
+    document.getElementById('bukuJudul').value = b.judul;
+    document.getElementById('bukuPengarang').value = b.pengarang;
+    document.getElementById('bukuPenerbit').value = b.penerbit;
+    document.getElementById('bukuTahun').value = b.tahun;
+    document.getElementById('bukuKategori').value = b.kategori;
+    document.getElementById('bukuStok').value = b.stok;
+    document.getElementById('bukuDeskripsi').value = b.deskripsi || '';
+  } else {
+    ['bukuJudul','bukuPengarang','bukuPenerbit','bukuTahun','bukuStok','bukuDeskripsi'].forEach(id => document.getElementById(id).value = '');
+  }
+  openModal('modalBuku');
+}
+
+function editBuku(id) { openModalBuku(id); }
+
+function saveBuku() {
+  const id = document.getElementById('bukuId').value;
+  const judul = document.getElementById('bukuJudul').value.trim();
+  const pengarang = document.getElementById('bukuPengarang').value.trim();
+  const stok = parseInt(document.getElementById('bukuStok').value);
+
+  if (!judul || !pengarang || isNaN(stok)) { showToast('Isi field yang wajib diisi!', 'error'); return; }
+
+  const data = {
+    judul, pengarang,
+    penerbit: document.getElementById('bukuPenerbit').value.trim(),
+    tahun: parseInt(document.getElementById('bukuTahun').value) || new Date().getFullYear(),
+    kategori: document.getElementById('bukuKategori').value,
+    stok,
+    deskripsi: document.getElementById('bukuDeskripsi').value.trim()
+  };
+
+  if (id) {
+    const idx = db.buku.findIndex(b => b.id === parseInt(id));
+    db.buku[idx] = {...db.buku[idx], ...data};
+    showToast('Buku berhasil diperbarui!', 'success');
+  } else {
+    db.buku.push({id: db.nextBukuId++, ...data});
+    showToast('Buku berhasil ditambahkan!', 'success');
+  }
+  saveDB(); closeModal('modalBuku'); renderBuku();
+}
+
+function deleteBuku(id) {
+  hapusCallback = () => {
+    db.buku = db.buku.filter(b => b.id !== id);
+    saveDB(); renderBuku(); showToast('Buku dihapus!', 'success');
+  };
+  document.getElementById('hapusMsg').textContent = 'Yakin ingin menghapus data buku ini?';
+  openModal('modalHapus');
+}
+
+// ====================== ANGGOTA ======================
+function renderAnggota(q='') {
+  const list = db.anggota.filter(a => !q || a.nama.toLowerCase().includes(q.toLowerCase()) || a.nis.includes(q));
+  document.getElementById('tableAnggota').innerHTML = list.length ? list.map(a => `
+    <tr>
+      <td>${a.nis}</td>
+      <td><strong>${a.nama}</strong></td>
+      <td>${a.kelas}</td>
+      <td>${a.username}</td>
+      <td>${a.status === 'aktif' ? '<span class="badge badge-success">Aktif</span>' : '<span class="badge badge-danger">Non-Aktif</span>'}</td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editAnggota(${a.id})">✏️ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAnggota(${a.id})">🗑️</button>
+      </td>
+    </tr>
+  `).join('') : `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👥</div>Tidak ada anggota ditemukan</div></td></tr>`;
+}
+
+function openModalAnggota(id=null) {
+  document.getElementById('modalAnggotaTitle').textContent = id ? 'Edit Anggota' : 'Tambah Anggota';
+  document.getElementById('anggotaId').value = id || '';
+  if (id) {
+    const a = db.anggota.find(x => x.id === id);
+    document.getElementById('anggotaNis').value = a.nis;
+    document.getElementById('anggotaNama').value = a.nama;
+    document.getElementById('anggotaKelas').value = a.kelas;
+    document.getElementById('anggotaUsername').value = a.username;
+    document.getElementById('anggotaPassword').value = '';
+    document.getElementById('anggotaStatus').value = a.status;
+  } else {
+    ['anggotaNis','anggotaNama','anggotaKelas','anggotaUsername','anggotaPassword'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('anggotaStatus').value = 'aktif';
+  }
+  openModal('modalAnggota');
+}
+function editAnggota(id) { openModalAnggota(id); }
+
+function saveAnggota() {
+  const id = document.getElementById('anggotaId').value;
+  const nis = document.getElementById('anggotaNis').value.trim();
+  const nama = document.getElementById('anggotaNama').value.trim();
+  const kelas = document.getElementById('anggotaKelas').value.trim();
+  const username = document.getElementById('anggotaUsername').value.trim();
+  const password = document.getElementById('anggotaPassword').value.trim();
+  const status = document.getElementById('anggotaStatus').value;
+
+  if (!nis || !nama || !kelas) { showToast('Isi NIS, Nama, dan Kelas!', 'error'); return; }
+
+  if (id) {
+    const idx = db.anggota.findIndex(a => a.id === parseInt(id));
+    db.anggota[idx] = {...db.anggota[idx], nis, nama, kelas, username: username || db.anggota[idx].username, status};
+    if (password) db.anggota[idx].password = password;
+    showToast('Anggota berhasil diperbarui!', 'success');
+  } else {
+    if (!username || !password) { showToast('Username dan password wajib diisi!', 'error'); return; }
+    if (db.anggota.find(a => a.username === username)) { showToast('Username sudah digunakan!', 'error'); return; }
+    db.anggota.push({id: db.nextAnggotaId++, nis, nama, kelas, username, password, status});
+    showToast('Anggota berhasil ditambahkan!', 'success');
+  }
+  saveDB(); closeModal('modalAnggota'); renderAnggota();
+}
+
+function deleteAnggota(id) {
+  hapusCallback = () => {
+    db.anggota = db.anggota.filter(a => a.id !== id);
+    saveDB(); renderAnggota(); showToast('Anggota dihapus!', 'success');
+  };
+  document.getElementById('hapusMsg').textContent = 'Yakin ingin menghapus data anggota ini?';
+  openModal('modalHapus');
+}
+
+// ====================== TRANSAKSI ======================
+function renderTransaksi(q='', filterStatus='') {
+  updateStatus();
+  let list = db.transaksi;
+  if (q) list = list.filter(t => {
+    const a = db.anggota.find(x => x.id === t.anggotaId);
+    const b = db.buku.find(x => x.id === t.bukuId);
+    return a?.nama.toLowerCase().includes(q.toLowerCase()) || b?.judul.toLowerCase().includes(q.toLowerCase());
+  });
+  if (filterStatus) list = list.filter(t => t.status === filterStatus);
+
+  document.getElementById('tableTransaksi').innerHTML = list.length ? [...list].reverse().map(t => {
+    const a = db.anggota.find(x => x.id === t.anggotaId);
+    const b = db.buku.find(x => x.id === t.bukuId);
+    const aksi = t.status !== 'dikembalikan'
+      ? `<button class="btn btn-outline btn-sm" onclick="adminKembalikan(${t.id})">↩️ Kembalikan</button>`
+      : `<span style="color:var(--muted);font-size:12px">Selesai</span>`;
+    return `<tr>
+      <td>#${t.id}</td>
+      <td>${a?.nama||'?'}</td>
+      <td>${b?.judul||'?'}</td>
+      <td>${t.tglPinjam}</td>
+      <td>${t.tglKembali}</td>
+      <td>${badgeStatus(t.status)}</td>
+      <td>${aksi}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🔄</div>Tidak ada transaksi</div></td></tr>`;
+}
+
+function openModalTransaksi() {
+  const anggotaOpts = db.anggota.filter(a => a.status === 'aktif').map(a => `<option value="${a.id}">${a.nama} (${a.kelas})</option>`).join('');
+  const bukuOpts = db.buku.filter(b => b.stok > 0).map(b => `<option value="${b.id}">${b.judul} (Stok: ${b.stok})</option>`).join('');
+  document.getElementById('trxAnggota').innerHTML = anggotaOpts || '<option>Tidak ada anggota</option>';
+  document.getElementById('trxBuku').innerHTML = bukuOpts || '<option>Tidak ada buku tersedia</option>';
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('trxTglPinjam').value = today;
+  const ret = new Date(); ret.setDate(ret.getDate() + 7);
+  document.getElementById('trxTglKembali').value = ret.toISOString().split('T')[0];
+  openModal('modalTransaksi');
+}
+
+function saveTransaksi() {
+  const anggotaId = parseInt(document.getElementById('trxAnggota').value);
+  const bukuId = parseInt(document.getElementById('trxBuku').value);
+  const tglPinjam = document.getElementById('trxTglPinjam').value;
+  const tglKembali = document.getElementById('trxTglKembali').value;
+
+  if (!anggotaId || !bukuId || !tglPinjam || !tglKembali) { showToast('Lengkapi semua data!', 'error'); return; }
+
+  const buku = db.buku.find(b => b.id === bukuId);
+  if (buku.stok < 1) { showToast('Stok buku habis!', 'error'); return; }
+
+  db.transaksi.push({id: db.nextTrxId++, anggotaId, bukuId, tglPinjam, tglKembali, status:'dipinjam'});
+  buku.stok--;
+  saveDB(); closeModal('modalTransaksi'); renderTransaksi();
+  showToast('Transaksi berhasil disimpan!', 'success');
+}
+
+function adminKembalikan(id) {
+  const t = db.transaksi.find(x => x.id === id);
+  t.status = 'dikembalikan';
+  const buku = db.buku.find(b => b.id === t.bukuId);
+  if (buku) buku.stok++;
+  saveDB(); renderTransaksi();
+  showToast('Buku berhasil dikembalikan!', 'success');
+}
+
+// ====================== SISWA VIEWS ======================
+function renderSiswaDashboard() {
+  updateStatus();
+  const myTrx = db.transaksi.filter(t => t.anggotaId === currentUser.id);
+  const aktif = myTrx.filter(t => t.status !== 'dikembalikan').length;
+  const selesai = myTrx.filter(t => t.status === 'dikembalikan').length;
+  const terlambat = myTrx.filter(t => t.status === 'terlambat').length;
+
+  document.getElementById('siswaStats').innerHTML = `
+    <div class="stat-card"><span class="stat-icon">📖</span><div class="stat-label">Sedang Dipinjam</div><div class="stat-value" style="color:var(--accent)">${aktif}</div></div>
+    <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-label">Sudah Dikembalikan</div><div class="stat-value" style="color:var(--success)">${selesai}</div></div>
+    <div class="stat-card"><span class="stat-icon">⚠️</span><div class="stat-label">Terlambat</div><div class="stat-value" style="color:var(--danger)">${terlambat}</div></div>
+    <div class="stat-card"><span class="stat-icon">📚</span><div class="stat-label">Total Buku Tersedia</div><div class="stat-value" style="color:var(--info)">${db.buku.filter(b=>b.stok>0).length}</div></div>
+  `;
+
+  document.getElementById('siswaRiwayat').innerHTML = myTrx.length ? [...myTrx].reverse().map(t => {
+    const b = db.buku.find(x => x.id === t.bukuId);
+    return `<tr><td>${b?.judul||'?'}</td><td>${t.tglPinjam}</td><td>${t.tglKembali}</td><td>${badgeStatus(t.status)}</td></tr>`;
+  }).join('') : `<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📋</div>Belum ada riwayat pinjaman</div></td></tr>`;
+}
+
+function renderKatalog(q='') {
+  const list = db.buku.filter(b => !q || b.judul.toLowerCase().includes(q.toLowerCase()) || b.pengarang.toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('tableKatalog').innerHTML = list.length ? list.map(b => `
+    <tr>
+      <td><strong>${b.judul}</strong><br><span style="color:var(--muted);font-size:12px">${b.deskripsi||''}</span></td>
+      <td>${b.pengarang}</td>
+      <td><span class="badge badge-info">${b.kategori}</span></td>
+      <td>${b.stok > 0 ? `<span class="badge badge-success">${b.stok} tersedia</span>` : '<span class="badge badge-danger">Habis</span>'}</td>
+      <td>${b.stok > 0 ? `<button class="btn btn-gold btn-sm" onclick="openPinjamSiswa(${b.id})">📖 Pinjam</button>` : '-'}</td>
+    </tr>
+  `).join('') : `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📚</div>Tidak ada buku ditemukan</div></td></tr>`;
+}
+
+function renderPinjamanSaya() {
+  updateStatus();
+  const myTrx = db.transaksi.filter(t => t.anggotaId === currentUser.id && t.status !== 'dikembalikan');
+  document.getElementById('tablePinjamanSaya').innerHTML = myTrx.length ? myTrx.map(t => {
+    const b = db.buku.find(x => x.id === t.bukuId);
+    return `<tr>
+      <td><strong>${b?.judul||'?'}</strong></td>
+      <td>${t.tglPinjam}</td>
+      <td>${t.tglKembali}</td>
+      <td>${badgeStatus(t.status)}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="openKembali(${t.id})">↩️ Kembalikan</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📋</div>Tidak ada pinjaman aktif</div></td></tr>`;
+}
+
+function openPinjamSiswa(bukuId) {
+  const b = db.buku.find(x => x.id === bukuId);
+  document.getElementById('pinjamBukuId').value = bukuId;
+  document.getElementById('pinjamBukuInfo').innerHTML = `<strong>${b.judul}</strong><br><span style="color:var(--muted)">${b.pengarang} • ${b.kategori}</span>`;
+  const ret = new Date(); ret.setDate(ret.getDate() + 7);
+  document.getElementById('pinjamTglKembali').value = ret.toISOString().split('T')[0];
+  openModal('modalPinjamSiswa');
+}
+
+function doPinjamSiswa() {
+  const bukuId = parseInt(document.getElementById('pinjamBukuId').value);
+  const tglKembali = document.getElementById('pinjamTglKembali').value;
+  const today = new Date().toISOString().split('T')[0];
+
+  if (!tglKembali) { showToast('Pilih tanggal kembali!', 'error'); return; }
+
+  // Cek sudah pinjam buku yang sama
+  const sudahPinjam = db.transaksi.find(t => t.anggotaId === currentUser.id && t.bukuId === bukuId && t.status !== 'dikembalikan');
+  if (sudahPinjam) { showToast('Anda sudah meminjam buku ini!', 'error'); return; }
+
+  const buku = db.buku.find(b => b.id === bukuId);
+  if (buku.stok < 1) { showToast('Stok buku habis!', 'error'); return; }
+
+  db.transaksi.push({id: db.nextTrxId++, anggotaId: currentUser.id, bukuId, tglPinjam: today, tglKembali, status:'dipinjam'});
+  buku.stok--;
+  saveDB();
+  closeModal('modalPinjamSiswa');
+  showToast('Buku berhasil dipinjam!', 'success');
+  renderKatalog(); renderSiswaDashboard();
+}
+
+function openKembali(trxId) {
+  const t = db.transaksi.find(x => x.id === trxId);
+  const b = db.buku.find(x => x.id === t.bukuId);
+  document.getElementById('kembaliTrxId').value = trxId;
+  document.getElementById('kembaliInfo').innerHTML = `<strong>${b?.judul||'?'}</strong><br><span style="color:var(--muted)">Tgl pinjam: ${t.tglPinjam} | Tgl kembali: ${t.tglKembali}</span>`;
+  openModal('modalKembali');
+}
+
+function doKembali() {
+  const trxId = parseInt(document.getElementById('kembaliTrxId').value);
+  const t = db.transaksi.find(x => x.id === trxId);
+  t.status = 'dikembalikan';
+  const buku = db.buku.find(b => b.id === t.bukuId);
+  if (buku) buku.stok++;
+  saveDB();
+  closeModal('modalKembali');
+  showToast('Buku berhasil dikembalikan!', 'success');
+  renderPinjamanSaya(); renderSiswaDashboard();
+}
+
+// ====================== HELPERS ======================
+function updateStatus() {
+  const today = new Date().toISOString().split('T')[0];
+  db.transaksi.forEach(t => {
+    if (t.status === 'dipinjam' && t.tglKembali < today) t.status = 'terlambat';
+    if (t.status === 'terlambat' && t.tglKembali >= today) t.status = 'dipinjam';
+  });
+}
+
+function badgeStatus(status) {
+  const map = {
+    'dipinjam':    '<span class="badge badge-info">📖 Dipinjam</span>',
+    'dikembalikan':'<span class="badge badge-success">✅ Dikembalikan</span>',
+    'terlambat':   '<span class="badge badge-danger">⚠️ Terlambat</span>',
+  };
+  return map[status] || status;
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+});
+
+function confirmHapus() { if (hapusCallback) { hapusCallback(); hapusCallback = null; } closeModal('modalHapus'); }
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  setTimeout(() => { t.className = ''; }, 3000);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doLogin();
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+</script>
+</body>
+</html>
